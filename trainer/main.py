@@ -23,7 +23,7 @@ class BlurDetectionModel(nn.Module):
         self.conv1 = nn.Conv2d(in_channels=3, out_channels=64, kernel_size=3, padding=1)
         self.conv2 = nn.Conv2d(in_channels=64, out_channels=128, kernel_size=3, padding=1)
         self.pool = nn.MaxPool2d(kernel_size=2, stride=2)
-        self.fc1 = nn.Linear(128 * 128 * 128, 256)  # Adjust based on your input size
+        self.fc1 = nn.Linear(128 * 64 * 64, 256)  # Adjust based on your input size
         self.fc2 = nn.Linear(256, 1)
 
     def forward(self, x):
@@ -36,7 +36,7 @@ class BlurDetectionModel(nn.Module):
 
 
 transform = transforms.Compose([
-    transforms.Resize((512, 512)),
+    transforms.Resize((256, 256), antialias=True),
     transforms.ToTensor(),
 ])
 
@@ -55,11 +55,9 @@ NUM_EPOCHS = 10
 for epoch in range(NUM_EPOCHS):
     for batch_idx, (data, target) in enumerate(train_loader):
         optimizer.zero_grad()
-        optimizer.step()
-        scheduler.step()
 
-        # Resize images to 512x512 before feeding into the model
-        data_resized = torch.cat([transforms.Resize((512, 512), antialias=True)(img.unsqueeze(0)) for img in data], dim=0)
+        # Resize images to 256x256 before feeding into the model
+        data_resized = torch.cat([transforms.Resize((256, 256), antialias=True)(img.unsqueeze(0)) for img in data], dim=0)
 
         data_resized = data_resized.to(DEVICE)  # Move data to the mps device if it's available
         target = target.to(DEVICE)  # Move target to the mps device if it's available
@@ -67,7 +65,9 @@ for epoch in range(NUM_EPOCHS):
         output = model(data_resized)
         loss = criterion(output, target.float().view_as(output))
         loss.backward()
+
         optimizer.step()
+        scheduler.step()
 
         pred = output.round()
         correct = pred.eq(target.view_as(pred)).sum().item()
