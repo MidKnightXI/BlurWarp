@@ -74,7 +74,7 @@ for epoch in range(NUM_EPOCHS):
         precision = correct / len(target)
 
         if batch_idx % 100 == 0:
-            print(f'Epoch [{epoch+1}/{NUM_EPOCHS}], Batch [{batch_idx}/{len(train_loader)}], Loss: {loss.item():.4f}, Precision: {precision:.4f}')
+            print(f'Epoch [{epoch+1}/{NUM_EPOCHS}], Loss: {loss.item():.4f}, Precision: {precision:.4f}')
 
 # Save the trained model
 torch.save(model.state_dict(), 'blur_detection_model.tch')
