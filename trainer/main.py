@@ -41,7 +41,7 @@ transform = transforms.Compose([
 ])
 
 train_dataset = datasets.ImageFolder(root='./dataset', transform=transform)
-train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
+train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True)
 
 # Initialize model, loss function, and optimizer
 model = BlurDetectionModel()
@@ -51,7 +51,7 @@ optimizer = optim.Adam(model.parameters(), lr=0.001)
 scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=3, gamma=0.5)  # Learning rate scheduler
 
 # Training loop
-NUM_EPOCHS = 10
+NUM_EPOCHS = 20
 for epoch in range(NUM_EPOCHS):
     for batch_idx, (data, target) in enumerate(train_loader):
         optimizer.zero_grad()
@@ -77,4 +77,4 @@ for epoch in range(NUM_EPOCHS):
             print(f'Epoch [{epoch+1}/{NUM_EPOCHS}], Loss: {loss.item():.4f}, Precision: {precision:.4f}')
 
 # Save the trained model
-torch.save(model.state_dict(), 'blur_detection_model.tch')
+torch.save(model.state_dict(), '../blur_detection_model.tch')
