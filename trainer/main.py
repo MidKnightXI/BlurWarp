@@ -94,7 +94,6 @@ def train_blur_detection_model(annotations_path, output_model_path, num_epochs=7
             loss.backward()
 
             optimizer.step()
-            scheduler.step()
 
             pred = output.round()
             correct = pred.eq(label_batch.view_as(pred)).sum().item()
@@ -102,6 +101,8 @@ def train_blur_detection_model(annotations_path, output_model_path, num_epochs=7
 
             if batch_idx % 100 == 0:
                 print(f'Epoch [{epoch+1}/{num_epochs}], Loss: {loss.item():.4f}, Precision: {precision:.4f}')
+
+        scheduler.step()
 
     torch.save(model.state_dict(), output_model_path)
     print(f'Model saved to {output_model_path}')
