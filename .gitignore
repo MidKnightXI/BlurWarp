@@ -13,11 +13,8 @@ Cargo.lock
 # MSVC Windows builds of rustc generate these, which store debugging information
 *.pdb
 
+dataset
 
-# Added by cargo
-
-/target
-
-# python
-trainer/dataset/*
-trainer/.venv
+blur_detection_model.tch
+predictions.json
+.DS_Store
