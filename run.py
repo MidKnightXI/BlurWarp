@@ -48,7 +48,7 @@ transform = transforms.Compose([
 ])
 
 # Create a DataLoader for inference
-inference_dataset = datasets.ImageFolder(root='./trainer/dataset', transform=transform)
+inference_dataset = datasets.ImageFolder(root='dataset', transform=transform)
 inference_loader = DataLoader(inference_dataset, batch_size=1, shuffle=False)
 
 # Run inference

@@ -109,6 +109,6 @@ def train_blur_detection_model(annotations_path, output_model_path, num_epochs=7
 
 
 if __name__ == '__main__':
-    annotations_path = './dataset/annotations.csv'
-    output_model_path = '../blur_detection_model.tch'
+    annotations_path = 'dataset/annotations.csv'
+    output_model_path = 'blur_detection_model.tch'
     train_blur_detection_model(annotations_path, output_model_path)
