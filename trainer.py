@@ -24,14 +24,13 @@ def setup_device():
 class BlurDetectionResNet(nn.Module):
     def __init__(self):
         super(BlurDetectionResNet, self).__init__()
-        self.resnet = models.resnet18()
+        self.resnet = models.resnet50()
         num_ftrs = self.resnet.fc.in_features
         self.resnet.fc = nn.Linear(num_ftrs, 1)
 
     def forward(self, x):
         x = self.resnet(x)
         return torch.sigmoid(x)
-
 
 
 class BlurrySharpDataset(torch.utils.data.Dataset):
@@ -55,7 +54,7 @@ class BlurrySharpDataset(torch.utils.data.Dataset):
 
 
 def train_blur_detection_model(annotations_path, output_model_path):
-    EPOCH = 10
+    EPOCH = 50
     DEVICE = setup_device()
 
     annotations = pd.read_csv(annotations_path)
