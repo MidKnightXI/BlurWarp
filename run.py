@@ -1,3 +1,6 @@
+from argparse import ArgumentParser
+from os.path import isdir
+from sys import exit as sys_exit
 import torch
 import torch.backends.mps
 from torch.utils.data import DataLoader
@@ -17,9 +20,6 @@ elif torch.backends.mps.is_available():
     DEVICE = torch.device("mps")
 
 
-print(f"Using - {DEVICE} -")
-
-
 class BlurDetectionResNet(nn.Module):
     def __init__(self):
         super(BlurDetectionResNet, self).__init__()
@@ -27,9 +27,27 @@ class BlurDetectionResNet(nn.Module):
         num_ftrs = self.resnet.fc.in_features
         self.resnet.fc = nn.Linear(num_ftrs, 1)
 
-    def forward(self, x):
+    def forward(self, x) -> torch.Tensor:
         x = self.resnet(x)
         return torch.sigmoid(x)
+
+
+def setup_argparse() -> ArgumentParser:
+    parser = ArgumentParser(
+        prog="blurwarp",
+        description="Detection of blurry images using ResNet50 AI model",
+        epilog="If you encounter any problem please submit an issue here: https://github.com/MidKnightXI/BlurWarp")
+
+    parser.add_argument("-d", "--directory",
+                        type=str,
+                        required=True,
+                        help="Define in which directory the model will analyze the images")
+    parser.add_argument("-o", "--output",
+                        default="predictions.json",
+                        type=str,
+                        help="Define the path of the output file eg: ./out/pred.json")
+    args = parser.parse_args()
+    return args
 
 
 def setup_model() -> BlurDetectionResNet:
@@ -47,7 +65,7 @@ def dump_predictions(path: str, predictions: list) -> None:
     print(f"Results saved to {path}")
 
 
-def run_model(path: str, output_path: str = "predictions.json") -> None:
+def run_model(path: str, output_path: str) -> None:
     model = setup_model()
 
     transform = transforms.Compose([
@@ -76,4 +94,11 @@ def run_model(path: str, output_path: str = "predictions.json") -> None:
 
 
 if __name__ == "__main__":
-    run_model(path="./dataset")
+    args = setup_argparse()
+
+    if isdir(args.directory) == False:
+        print("Please specify a proper path: path/to/directory")
+        sys_exit(1)
+
+    print(f"Using - {DEVICE} - backend to run the model")
+    run_model(args.directory, args.output)
