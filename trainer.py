@@ -12,12 +12,12 @@ import torchvision.models as models
 def setup_device():
     DEVICE = torch.device("cpu")
 
-    if torch.cuda.is_available():
-        DEVICE = torch.device("cuda")
-    elif torch.backends.mps.is_available():
+    # if torch.cuda.is_available(): # Uncomment for Nvidia GPUs
+    #     DEVICE = torch.device("cuda")
+    if torch.backends.mps.is_available():
         DEVICE = torch.device("mps")
 
-    print(f"Running on {DEVICE}")
+    print(f"Training on {DEVICE}")
     return DEVICE
 
 
@@ -54,7 +54,7 @@ class BlurrySharpDataset(torch.utils.data.Dataset):
 
 
 def train_blur_detection_model(annotations_path, output_model_path):
-    EPOCH = 50
+    EPOCH = 30
     DEVICE = setup_device()
 
     annotations = pd.read_csv(annotations_path)
@@ -95,6 +95,7 @@ def train_blur_detection_model(annotations_path, output_model_path):
 
         scheduler.step()
 
+    model.to(torch.device("cpu"))
     torch.save(model.state_dict(), output_model_path)
     print(f'Model saved to {output_model_path}')
 
