@@ -1,6 +1,6 @@
 from argparse import ArgumentParser
 from os import listdir
-from os.path import isdir, join
+from os.path import isdir, join, dirname, abspath
 from sys import exit as sys_exit, stdout
 import torch
 from torch import nn
@@ -53,6 +53,8 @@ class SingleFolderDataset(torch.utils.data.Dataset):
 
 
 def setup_argparse() -> ArgumentParser:
+    default_output_path = join(dirname(abspath(__file__)), "predictions.json")
+
     parser = ArgumentParser(
         prog="blurwarp",
         description="Detection of blurry images using ResNet50 AI model",
@@ -63,7 +65,7 @@ def setup_argparse() -> ArgumentParser:
                         required=True,
                         help="Define in which directory the model will analyze the images")
     parser.add_argument("-o", "--output",
-                        default="predictions.json",
+                        default=default_output_path,
                         type=str,
                         help="Define the path of the output file eg: ./out/pred.json")
     args = parser.parse_args()
@@ -71,8 +73,9 @@ def setup_argparse() -> ArgumentParser:
 
 
 def setup_model() -> BlurDetectionResNet:
+    model_path = join(dirname(abspath(__file__)), "blur_detection_model.tch")
     model = BlurDetectionResNet()
-    model.load_state_dict(torch.load('blur_detection_model.tch'))
+    model.load_state_dict(torch.load(model_path))
     model.to(DEVICE)
     model.eval()
     stdout.write("Model loaded\n")
@@ -93,6 +96,7 @@ def run_model(path: str, output_path: str) -> None:
         transforms.ToTensor(),
     ])
 
+    # todo: add recursivity as an argument and stop loading directories and not images
     dataset = SingleFolderDataset(root_dir=path, transform=transform)
     loader = DataLoader(dataset, batch_size=1, shuffle=False)
 
@@ -109,9 +113,9 @@ def run_model(path: str, output_path: str) -> None:
             output = model(data).item()
 
             predictions.append({
-                "status": "success",
+                "status": True if round(output, 2) > 0.9 else False,
                 "filename": entry[0],
-                "detected": {"blur_score": round(output, 2)}
+                "score": round(output, 2)
             })
 
     dump_predictions(output_path, predictions)
