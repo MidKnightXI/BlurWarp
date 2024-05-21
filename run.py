@@ -76,7 +76,7 @@ def setup_argparse() -> ArgumentParser:
         prog="blurwarp",
         description="Detection of blurry images using ResNet50 AI model",
         epilog="If you encounter any problem please submit an issue here: https://github.com/MidKnightXI/BlurWarp")
-    parser.add_argument("-t", "--target",
+    parser.add_argument("target",
                         type=str,
                         required=True,
                         help="Define in which directory the model will analyze the images")

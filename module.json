@@ -1,8 +1,14 @@
 {
     "name": "BlurWarp",
-    "version": "v1.2.3",
+    "version": "v2.0.0",
     "description": "Uses a lightweight AI model to detect blurry picture, requires python3.",
     "type": "detection",
+    "arguments": [
+        {
+            "name": "--recursive",
+            "type": "switch"
+        }
+    ],
     "binary": "blurwarp",
     "runtime": "python3"
 }
