@@ -36,8 +36,8 @@ class SingleFolderDataset(torch.utils.data.Dataset):
             if isfile(img_path) is False:
                 continue
             try:
-                Image.open(img_path)
-                self.samples.append((image_file, None))
+                with Image.open(img_path):
+                    self.samples.append((image_file, None))
             except UnidentifiedImageError:
                 stdout.write(f"Cannot identify image file '{img_path}', skipping.\n")
 
