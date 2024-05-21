@@ -1,0 +1,8 @@
+{
+    "name": "BlurWarp",
+    "version": "v1.2.3",
+    "description": "Uses a lightweight AI model to detect blurry picture, requires python3.",
+    "type": "detection",
+    "binary": "blurwarp",
+    "runtime": "python3"
+}
