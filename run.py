@@ -1,6 +1,6 @@
 from argparse import ArgumentParser
 from os import listdir
-from os.path import isdir, join, dirname, abspath
+from os.path import isdir, isfile, join, dirname, abspath
 from sys import exit as sys_exit, stdout
 import torch
 from torch import nn
@@ -33,6 +33,8 @@ class SingleFolderDataset(torch.utils.data.Dataset):
         self.samples = []
         for image_file in listdir(root_dir):
             img_path = join(root_dir, image_file)
+            if isfile(img_path) is False:
+                continue
             try:
                 Image.open(img_path)
                 self.samples.append((image_file, None))
