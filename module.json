@@ -9,6 +9,6 @@
             "type": "switch"
         }
     ],
-    "binary": "blurwarp",
+    "binary": "run.py",
     "runtime": "python3"
 }
