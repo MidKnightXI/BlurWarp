@@ -1,5 +1,5 @@
 from argparse import ArgumentParser
-from os import listdir
+from os import listdir, walk
 from os.path import isdir, isfile, join, dirname, abspath
 from sys import exit as sys_exit, stdout
 import torch
@@ -26,11 +26,25 @@ class BlurDetectionResNet(nn.Module):
         return torch.sigmoid(x)
 
 
-class SingleFolderDataset(torch.utils.data.Dataset):
-    def __init__(self, root_dir, transform=None):
+class RunnerDataset(torch.utils.data.Dataset):
+    def __init__(self, root_dir, transform=None, recursive=False):
         self.root_dir = root_dir
         self.transform = transform
         self.samples = []
+        self.recursive = recursive
+
+        if self.recursive is True:
+            self.load_images_recursively(root_dir)
+        else:
+            self.load_images(root_dir)
+
+    def load_images_recursively(self, root_dir):
+        for dirpath, _, filenames in walk(root_dir):
+            print(dirpath)
+            self.load_images(dirpath)
+
+
+    def load_images(self, root_dir):
         for image_file in listdir(root_dir):
             img_path = join(root_dir, image_file)
             if isfile(img_path) is False:
@@ -93,7 +107,7 @@ def dump_predictions(path: str, predictions: list) -> None:
     stdout.write(f"Results saved to {path}\n")
 
 
-def run_model(path: str, output_path: str) -> None:
+def run_model(path: str, output_path: str, recursive: bool) -> None:
     model = setup_model()
 
     transform = transforms.Compose([
@@ -101,7 +115,7 @@ def run_model(path: str, output_path: str) -> None:
         transforms.ToTensor(),
     ])
 
-    dataset = SingleFolderDataset(root_dir=path, transform=transform)
+    dataset = RunnerDataset(root_dir=path, transform=transform, recursive=recursive)
     loader = DataLoader(dataset, batch_size=1, shuffle=False)
 
     z_loader_dataset = zip(loader, dataset.samples)
@@ -133,4 +147,4 @@ if __name__ == "__main__":
         sys_exit(1)
 
     stdout.write(f"Using - {DEVICE} - backend to run the model\n")
-    run_model(args.target, args.output)
+    run_model(args.target, args.output, args.recursive)
