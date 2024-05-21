@@ -40,6 +40,8 @@ class SingleFolderDataset(torch.utils.data.Dataset):
                     self.samples.append((image_file, None))
             except UnidentifiedImageError:
                 stdout.write(f"Cannot identify image file '{img_path}', skipping.\n")
+            except Exception as e:
+                stdout.write(f"Error loading image file '{img_path}': {e}, skipping.\n")
 
     def __len__(self):
         return len(self.samples)
