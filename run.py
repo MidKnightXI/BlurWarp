@@ -58,12 +58,10 @@ class SingleFolderDataset(torch.utils.data.Dataset):
 
 def setup_argparse() -> ArgumentParser:
     default_output_path = join(dirname(abspath(__file__)), "predictions.json")
-
     parser = ArgumentParser(
         prog="blurwarp",
         description="Detection of blurry images using ResNet50 AI model",
         epilog="If you encounter any problem please submit an issue here: https://github.com/MidKnightXI/BlurWarp")
-
     parser.add_argument("-t", "--target",
                         type=str,
                         required=True,
@@ -72,6 +70,9 @@ def setup_argparse() -> ArgumentParser:
                         default=default_output_path,
                         type=str,
                         help="Define the path of the output file eg: ./out/pred.json")
+    parser.add_argument("-r", "--recursive",
+                        action='store_true',
+                        help="Recursively search for images in subdirectories")
     args = parser.parse_args()
     return args
 
@@ -100,7 +101,6 @@ def run_model(path: str, output_path: str) -> None:
         transforms.ToTensor(),
     ])
 
-    # todo: add recursivity as an argument and stop loading directories and not images
     dataset = SingleFolderDataset(root_dir=path, transform=transform)
     loader = DataLoader(dataset, batch_size=1, shuffle=False)
 
