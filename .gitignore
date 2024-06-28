@@ -163,6 +163,5 @@ cython_debug/
 
 dataset*
 
-blur_detection_model.tch
 predictions.json
 .DS_Store
