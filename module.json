@@ -6,7 +6,8 @@
     "arguments": [
         {
             "name": "--recursive",
-            "type": "switch"
+            "type": "switch",
+            "values": null
         }
     ],
     "binary": "run.py",
